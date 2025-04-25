@@ -3,14 +3,14 @@
 
 #include <logger.h>
 #include <unordered_map>
-// #include <httplib.h>
+#include <httplib.h>
 
 class server_logger_builder;
 class server_logger final:
     public logger
 {
 
-    // httplib::Client _client;
+    httplib::Client _client;
 
     server_logger(const std::string& dest, const std::unordered_map<logger::severity ,std::pair<std::string, bool>>& streams);
 

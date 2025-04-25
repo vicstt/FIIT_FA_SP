@@ -64,6 +64,9 @@ private:
 
 public:
 
+    std::mutex& get_mutex() const noexcept;
+    allocator_with_fit_mode::fit_mode& get_fit_mode() const noexcept;
+
     explicit allocator_buddies_system(
             size_t space_size_power_of_two,
             std::pmr::memory_resource *parent_allocator = nullptr,
@@ -99,6 +102,10 @@ public:
 
 
     std::vector<allocator_test_utils::block_info> get_blocks_info() const noexcept override;
+
+    unsigned char get_space_size_power() const;
+
+    void* find_suitable_block(size_t required_k, allocator_with_fit_mode::fit_mode mode) const;
 
 private:
 

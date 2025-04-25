@@ -1,7 +1,3 @@
-//
-// Created by Des Caldnd on 5/27/2024.
-//
-
 #ifndef MP_OS_BIG_INT_H
 #define MP_OS_BIG_INT_H
 
@@ -164,18 +160,42 @@ public:
     friend std::istream &operator>>(std::istream &stream, big_int &value);
 
     std::string to_string() const;
+
+    void split_at(size_t pos, big_int& high, big_int& low) const;
+
+    void trivial_multiply(const big_int& other);
+
+    static big_int karatsuba_multiply(const big_int& a, const big_int& b);
 };
 
 template<class alloc>
-big_int::big_int(const std::vector<unsigned int, alloc> &digits, bool sign, pp_allocator<unsigned int> allocator)
-{
-    throw not_implemented("template<class alloc> big_int::big_int(const std::vector<unsigned int, alloc> &digits, bool sign, pp_allocator<unsigned int> allocator)", "your code should be here...");
+big_int::big_int(const std::vector<unsigned int, alloc>& digits, bool sign, pp_allocator<unsigned int> allocator) : _sign(sign), _digits(digits.begin(), digits.end(), allocator) {
+    if (_digits.empty()) {
+        _digits.push_back(0);
+    }
+
+    while (!_digits.empty() && _digits.back() == 0) {
+        _digits.pop_back();
+    }
 }
 
 template<std::integral Num>
-big_int::big_int(Num d, pp_allocator<unsigned int>)
-{
-    throw not_implemented("template<std::integral Num>big_int::big_int(Num, pp_allocator<unsigned int>)", "your code should be here...");
+big_int::big_int(Num d, pp_allocator<unsigned int> allocator) : _sign(d >= 0), _digits(allocator) {
+    auto abs_d = static_cast<unsigned long long>(d < 0 ? -d : d);
+    _digits.clear();
+    if (abs_d == 0) {
+        _digits.push_back(0);
+    } else {
+        unsigned long long BASE = 1ULL << (8 * sizeof(unsigned int));
+        while (abs_d > 0) {
+            _digits.push_back(static_cast<unsigned int>(abs_d % BASE));
+            abs_d /= BASE;
+        }
+    }
+
+    while (_digits.size() > 1 && _digits.back() == 0) {
+        _digits.pop_back();
+    }
 }
 
 big_int operator""_bi(unsigned long long n);

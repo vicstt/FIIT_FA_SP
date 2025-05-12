@@ -63,6 +63,17 @@ public:
 
     bool do_is_equal(const std::pmr::memory_resource& other) const noexcept override;
 
+private:
+    allocator_with_fit_mode::fit_mode get_fit_mode() const;
+
+    void* get_first_fit(size_t size);
+
+    void* get_best_fit(size_t size);
+
+    void* get_worst_fit(size_t size);
+
+    void* find_suitable_block(size_t required_size, allocator_with_fit_mode::fit_mode mode);
+
 public:
     
     inline void set_fit_mode(
@@ -76,9 +87,11 @@ private:
 
     std::vector<allocator_test_utils::block_info> get_blocks_info_inner() const override;
 
-/** TODO: Highly recommended for helper functions to return references */
+    size_t get_total_size() const noexcept;
 
     inline logger *get_logger() const override;
+
+    inline std::mutex &get_mutex() const;
 
     inline std::string get_typename() const noexcept override;
 
